@@ -106,9 +106,5 @@ module.exports = (socket) => {
         const downloadedPath = await electron_updater_1.autoUpdater.downloadUpdate();
         electronSocket.emit('autoUpdaterDownloadUpdateComplete' + guid, downloadedPath);
     });
-    socket.on('autoUpdaterGetFeedURL', async (guid) => {
-        const feedUrl = await electron_updater_1.autoUpdater.getFeedURL();
-        electronSocket.emit('autoUpdaterGetFeedURLComplete' + guid, feedUrl || '');
-    });
 };
 //# sourceMappingURL=autoUpdater.js.map

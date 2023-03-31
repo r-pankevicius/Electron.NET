@@ -573,19 +573,19 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Emit("autoUpdaterQuitAndInstall", isSilent, isForceRunAfter);
         }
 
-        /// <summary>
-        /// Start downloading update manually. You can use this method if "AutoDownload" option is set to "false".
-        /// </summary>
-        /// <returns>Path to downloaded file.</returns>
-        public Task<string> DownloadUpdateAsync()
+		/// <summary>
+		/// Start downloading update manually. You can use this method if "AutoDownload" option is set to <c>false</c>.
+		/// </summary>
+		/// <returns>Paths to downloaded files.</returns>
+		public Task<string[]> DownloadUpdateAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string[]>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("autoUpdaterDownloadUpdateComplete" + guid, (downloadedPath) =>
+            BridgeConnector.Socket.On<string[]>("autoUpdaterDownloadUpdateComplete" + guid, (downloadedPaths) =>
             {
                 BridgeConnector.Socket.Off("autoUpdaterDownloadUpdateComplete" + guid);
-                taskCompletionSource.SetResult(downloadedPath.ToString());
+                taskCompletionSource.SetResult(downloadedPaths);
             });
 
             BridgeConnector.Socket.Emit("autoUpdaterDownloadUpdate", guid);
@@ -593,27 +593,7 @@ namespace ElectronNET.API
             return taskCompletionSource.Task;
         }
 
-        /// <summary>
-        /// Feed URL.
-        /// </summary>
-        /// <returns>Feed URL.</returns>
-        public Task<string> GetFeedURLAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<string>();
-            string guid = Guid.NewGuid().ToString();
-
-            BridgeConnector.Socket.On("autoUpdaterGetFeedURLComplete" + guid, (downloadedPath) =>
-            {
-                BridgeConnector.Socket.Off("autoUpdaterGetFeedURLComplete" + guid);
-                taskCompletionSource.SetResult(downloadedPath.ToString());
-            });
-
-            BridgeConnector.Socket.Emit("autoUpdaterGetFeedURL", guid);
-
-            return taskCompletionSource.Task;
-        }
-
-        private readonly JsonSerializer _jsonSerializer = new JsonSerializer()
+         private readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
